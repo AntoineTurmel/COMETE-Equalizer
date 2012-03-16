@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#"
-     xmlns:nightingale="http://www.getnightingale.com/2007/addon-metadata-rdf#">
+     xmlns:songbird="http://www.songbirdnest.com/2007/addon-metadata-rdf#">
   <Description about="urn:mozilla:install-manifest">
-    <em:id>{caf68136-085e-402e-a6ce-471d52be6f64}</em:id>
+    <em:id>EqPresets@getnightingale.com</em:id>
     <em:type>2</em:type>
-    <em:name>COMETE-EQ</em:name>
-    <em:version>0.0.0.3</em:version>
-    <em:creator>Azraeht</em:creator>
-    <em:description>COMETE-EQ</em:description>
-    <em:iconURL>chrome://cometeeq/skin/icon_addon.png</em:iconURL>
+    <em:name>Equalizer Presets +</em:name>
+    <em:version>1.0</em:version>
+    <em:creator>GeekShadow</em:creator>
+    <em:contributor>Azraeht</em:contributor>
+    <em:contributor>Seba_Kerckhof</em:contributor>
+    <em:description>Add Presets to the Equalizer with ability to save</em:description>
+    <em:iconURL>chrome://eqpresets/skin/icon_addon.png</em:iconURL>
+
+    <!-- Songbird -->
+    <em:targetApplication>
+      <Description>
+        <em:id>songbird@songbirdnest.com</em:id>
+        <em:minVersion>1.4.3</em:minVersion>
+        <em:maxVersion>2.0.0</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    
+    <!-- Nightingale -->
     <em:targetApplication>
       <Description>
         <em:id>nightingale@getnightingale.com</em:id>
-        <em:minVersion>1.8.0</em:minVersion>
-        <em:maxVersion>1.10.*</em:maxVersion>
+        <em:minVersion>1.11.0a</em:minVersion>
+        <em:maxVersion>1.12.0a</em:maxVersion>
       </Description>
     </em:targetApplication>
-
-
-
-
-
-
 
   </Description>
 </RDF>

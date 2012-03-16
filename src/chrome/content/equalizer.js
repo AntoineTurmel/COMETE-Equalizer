@@ -1,128 +1,132 @@
 ﻿// Make a namespace.
-if (typeof cometeeq == 'undefined') {
-  var cometeeq = {};
+if (typeof eqpresets == 'undefined') {
+  var eqpresets = {};
 }
 
-cometeeq = {
+eqpresets = {
 	onLoad: function() {
 		var equalizer = document.getElementById("equalizer");
 		equalizer.setAttribute("height","250");
 		//equalizer.setAttribute("width","250");
-		//Vérification de l'existence du fichier de préts "cometeeq_presets.xml"
-		cometeeq.findOrCreate();
-		cometeeq.loadList();
+		//Check if the XML file exists
+		eqpresets.findOrCreate();
+		eqpresets.loadList();
 	},
-	easeInOut: function(minValue,maxValue,totalSteps,actualStep,powr){ 
+	easeInOut: function(minValue,maxValue,totalSteps,actualStep,powr){
 		var delta = maxValue - minValue;
-		var stepp = minValue+(Math.pow(((1 / totalSteps) * actualStep), powr) * delta); 
+		var stepp = minValue+(Math.pow(((1 / totalSteps) * actualStep), powr)
+			* delta); 
 		return Math.ceil(stepp * 100) / 100;
 	},
 	loadList: function(){
+
+		// Reading the presets file
+		var path = eqpresets.getFilePathInProfile("equalizer_presets.xml");
+		var xmlDoc = eqpresets.readXMLDocument(path);
 		
-		// Lecture du fichier de présets
-		var path = cometeeq.getFilePathInProfile("cometeeq_presets.xml");
-		var xmlDoc = cometeeq.readXMLDocument(path);
+		//We retrieve the list of presets in the equalizer
+		var list =	document.getElementById('presets');
 		
-		//On récupère la liste de presets de l'equalizer
-		var liste =	document.getElementById('presets');
-		
-		//On vide la liste des presets
-		while(liste.firstChild)
-			liste.removeChild(liste.firstChild);
+		//We empty the list of presets
+		while(list.firstChild)
+			list.removeChild(list.firstChild);
 			
 		var rootNode = xmlDoc.documentElement; 
 		
-		//On récupère le préset de préférence
-		var pref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2);
-		var preset = pref.getCharPref("extensions.cometeeq.currentpreset");	
-				
+		//We retrieve the current preset in preferences
+		var pref = Components.classes["@mozilla.org/preferences-service;1"]
+                     .getService(Components.interfaces.nsIPrefBranch2);
+		var preset = pref.getCharPref("extensions.eqpresets.currentpreset");	
+
 		var presets = rootNode.getElementsByTagName("preset");
 		var selectedItem = null;
-		//On parcours les presets du fichier de paramétrage
+		
+		//We parse every presets of the setting file
 		for (var i = 0, sz = presets.length; i < sz; i++)
 		{
-			//création d'un nouveau menuitem à insérer
+			//New menuitem to insert
 			var opt = document.createElement('menuitem');
-			// Création du oncommand en fonction des paramètres band du Presets
+			//Creation of the oncommand with parameters of the preset bands
 			var node = presets[i];
-			var value = "cometeeq.presets('"+presets[i].getAttribute("name")+"'";
+			var value = "eqpresets.presets('"+presets[i].getAttribute("name")+
+			  "'";
 			var bands = node.getElementsByTagName("band");
-			for(var j = 0; j< bands.length; j++){ 
+			for(var j = 0; j< bands.length; j++){
 				var element = bands[j]; 
 				value += ",'"+element.firstChild.nodeValue+"'";
 			}
 			value += ")";
 			
-			//Ajout des attributs à l'élément menuItem
+			//adding attributes to the menuItem element
 			opt.setAttribute("value", presets[i].getAttribute("name"));
 			opt.setAttribute("oncommand", value);
 			opt.setAttribute("label", presets[i].getAttribute("name"));
 						
-			//Preset selectionné
+			//selected preset
 			if(presets[i].getAttribute("name") == preset){
 				//opt.setAttribute("selected", true);
 				//alert(preset);
 				selectedItem = i;
-				document.getElementById("nom_preset").value = presets[i].getAttribute("name");
+				document.getElementById("preset_name").value = presets[i].getAttribute("name");
 			}
 			
-			//On ajoute l'item à la liste de presets
-			liste.appendChild(opt);
+			//adding the item to the list of presets
+			list.appendChild(opt);
 			
 		}
-		liste.parentNode.selectedIndex = selectedItem;
+		list.parentNode.selectedIndex = selectedItem;
 	
 	},
 	findOrCreate: function(){
-		//Instance du fichier
+		//File init
 		var file = Components.classes["@mozilla.org/file/local;1"]
 					.createInstance(Components.interfaces.nsILocalFile);
-		var path = cometeeq.getFilePathInProfile("cometeeq_presets.xml");
+		var path = eqpresets.getFilePathInProfile("equalizer_presets.xml");
 		file.initWithPath(path);		
 		
-		//Vérification de l'existance du fichier
+		//Check if the file exists
 		if(file.exists()){
-			//alert("Le fichier existe");
+			//alert("File exists");
 		}else{
 			file.create("text/XML",0777);
 			
-			//Ecriture du fichier de paramètres
-			var presets = cometeeq.getDefaultPresets();
+			//Writing of parameters file
+			var presets = eqpresets.getDefaultPresets();
 			
-			// creation d'un parser DOM,
+			// creation of DOM parser
 			var parser = Components.classes["@mozilla.org/xmlextras/domparser;1"]
                          .createInstance(Components.interfaces.nsIDOMParser);
 			
-			// création du contenu du fichier
-			var datas = cometeeq.createXMLString(presets);
+			// creation of file content
+			var datas = eqpresets.createXMLString(presets);
 			
-			//On crée le document DOM
+			// Creation of the DOM document
 			var DOMDoc = parser.parseFromString(datas,"text/xml");
 			
-			//On l'enregistre dans ProfD
-			cometeeq.saveXMLDocument(DOMDoc,path);
+			//Save in ProfD
+			eqpresets.saveXMLDocument(DOMDoc,path);
 			
-			//On choisis le preset flat par défaut
+			//flat preset choosen by default
 			var pref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2);
-			pref.setCharPref("extensions.cometeeq.currentpreset","flat");
+			pref.setCharPref("extensions.eqpresets.currentpreset","flat");
 		}
 		
 	},
 	readXMLDocument: function(aPath) {
 		
-		// objet representant le fichier à lire
+		// object for the file to be read
 		var file = Components.classes["@mozilla.org/file/local;1"]
 					.createInstance(Components.interfaces.nsILocalFile);
 		file.initWithPath(aPath);
-		// initialisation d'un flux sur le fichier
+		// init of stream in the file
 		var stream = Components.classes["@mozilla.org/network/file-input-stream;1"]
 							 .createInstance(Components.interfaces.nsIFileInputStream);
 		stream.init(file, -1, -1, Components.interfaces.nsIFileInputStream.CLOSE_ON_EOF);
 				
-		// creation d'un parser DOM,
+		// creation of the DOM parser
 		var parser = Components.classes["@mozilla.org/xmlextras/domparser;1"]
 							 .createInstance(Components.interfaces.nsIDOMParser);
-		// generation d'un DOM à partir du flux
+		// DOM generation from the stream
 		var doc = parser.parseFromStream(stream, null, file.fileSize, "text/xml");
 		parser = null;
 		stream = null;
@@ -130,12 +134,11 @@ cometeeq = {
 		return doc;
 	},
 	getFilePathInProfile: function(aRelativePath) {
-		// on récupère un objet nsIFile qui represente le repertoire du profil
-		// de l'utilisateur
+		// we retrieve the nsIFile object (profile directory of the user)
 		var file = Components.classes["@mozilla.org/file/directory_service;1"]
 						  .getService(Components.interfaces.nsIProperties)
 						  .get("ProfD", Components.interfaces.nsIFile);
-		// on y ajoute le chemin relatif donné
+		// we add the relative path given
 		var path = aRelativePath.split("/");
 		for (var i = 0, sz = path.length; i < sz; i++) {
 			if (path[i] != "")
@@ -144,11 +147,11 @@ cometeeq = {
 		return file.path;
 	},
 	saveXMLDocument: function(aDomDoc, aPath) {
-		// objet representant le fichier à écrire
+		// object for the file to be writen
 		var file = Components.classes["@mozilla.org/file/local;1"]
 					.createInstance(Components.interfaces.nsILocalFile);
 		file.initWithPath(aPath);
-		// initialisation d'un flux sur le fichier
+		// init of the stream on the file
 		var stream = Components.classes["@mozilla.org/network/file-output-stream;1"]
 					.createInstance(Components.interfaces.nsIFileOutputStream);
 		stream.init(file, -1, -1, 0);
@@ -205,11 +208,12 @@ cometeeq = {
 		return data;
 	},
 	presets: function(eqpreset,band0,band1,band2,band3,band4,band5,band6,band7,band8,band9) {
-		this.mm = Components.classes["@getnightingale.com/Nightingale/Mediacore/Manager;1"]
-                    .getService(Components.interfaces.sbIMediacoreManager);
-		//this.mm = Components.classes["@songbirdnest.com/Songbird/Mediacore/Manager;1"].getService(Components.interfaces.sbIMediacoreManager);
-  	var pref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2);
-	pref.setCharPref("extensions.cometeeq.currentpreset",eqpreset);
+		this.mm = Components.classes["@songbirdnest.com/Songbird/Mediacore/Manager;1"]
+		            .getService(Components.interfaces.sbIMediacoreManager);
+  	var pref = Components.classes["@mozilla.org/preferences-service;1"]
+  	                .getService(Components.interfaces.nsIPrefBranch2);
+
+	pref.setCharPref("extensions.eqpresets.currentpreset",eqpreset);
 	
 	var start = new Array();
 	var bands = new Array();
@@ -242,7 +246,8 @@ cometeeq = {
 			
 			for(i = 0; i < 10; i++)
 			{
-				pref.setCharPref("nightingale.eq.band." + i.toString(),cometeeq.easeInOut(start[i],bands[i],steps,currStep,1.6));
+				pref.setCharPref("songbird.eq.band." + i.toString(),eqpresets
+				  .easeInOut(start[i],bands[i],steps,currStep,1.6));
 			}
 			
 			currStep++;
@@ -254,18 +259,19 @@ cometeeq = {
 				
 					bandSet[i].gain = bands[i];
 					this.mm.equalizer.setBand(bandSet[i])  
-					pref.setCharPref("nightingale.eq.band." + i.toString(),bands[i]);
+					pref.setCharPref("songbird.eq.band." + i.toString(),bands[i]);
 				}
 				window.clearInterval(anim);
 			}
 			
 		}, 10);
 
-		document.getElementById("nom_preset").value = eqpreset;
+		document.getElementById("preset_name").value = eqpreset;
 	},
 	exporteqf: function() {
 	
-    var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+    var file = Components.classes["@mozilla.org/file/local;1"]
+	  .createInstance(Components.interfaces.nsILocalFile);
     file.initWithPath("c:\test.eqf");
 
     var foStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
@@ -275,7 +281,7 @@ cometeeq = {
     // 0x10 = PR_APPEND (append to file with each write)
     foStream.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
 
-var data = "Winamp EQ library file v1.1!--Entry1";
+    var data = "Winamp EQ library file v1.1!--Entry1";
 
     foStream.write(data, data.length);
     foStream.close();
@@ -283,27 +289,27 @@ var data = "Winamp EQ library file v1.1!--Entry1";
 	},		
 	
 	savePreset: function(){
-		//récupérer le string bundle
+		//retrieve the string bundle
 		var strbundle = document.getElementById("messages");
 		
-		//récupérer xmlDoc
-		var path = cometeeq.getFilePathInProfile("cometeeq_presets.xml");
-		var xmlDoc = cometeeq.readXMLDocument(path);
+		//retrieve xmlDoc
+		var path = eqpresets.getFilePathInProfile("equalizer_presets.xml");
+		var xmlDoc = eqpresets.readXMLDocument(path);
 		
-		//récupérer nom preset
-		var preset_name = document.getElementById("nom_preset").value;
+		//retrieve the preset name
+		var preset_name = document.getElementById("preset_name").value;
 		
-		//récupérer valeur preset
+		//retrieve the preset value
 		var bandSet = new Array();
-		this.mm = Components.classes["@getnightingale.com/Nightingale/Mediacore/Manager;1"]
-                    .getService(Components.interfaces.sbIMediacoreManager);
-		//this.mm = Components.classes["@songbirdnest.com/Songbird/Mediacore/Manager;1"].getService(Components.interfaces.sbIMediacoreManager);
+		this.mm = Components.classes["@songbirdnest.com/Songbird/Mediacore/Manager;1"]
+		            .getService(Components.interfaces.sbIMediacoreManager);
+
 		for(i = 0; i < 10; i++)
 		{
 			bandSet[i] = this.mm.equalizer.getBand(""+i).gain;
 		}
 		
-		//créer DOM preset
+		//creating DOM preset
 		if(preset_name != ""){
 			var oldy = null;
 			var valid_name=true;
@@ -316,7 +322,7 @@ var data = "Winamp EQ library file v1.1!--Entry1";
 				}
 			
 			if(valid_name){
-				//Insérer preset dans xmlDoc
+				//insert preset in xmlDoc
 				var presetDOM = xmlDoc.createElement("preset");
 				presetDOM.setAttribute("name",preset_name);
 				
@@ -339,15 +345,16 @@ var data = "Winamp EQ library file v1.1!--Entry1";
 				alert(strbundle.getString("alertPresetSaved"));
 				//alert("Preset Saved");
 				
-				//Sauver fichier
-				cometeeq.saveXMLDocument(xmlDoc,path);
-				//On change le preset sélectionné
-				var pref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2);
-				pref.setCharPref("extensions.cometeeq.currentpreset",preset_name);
-				//Recharger liste
-				cometeeq.loadList();
+				//save file
+				eqpresets.saveXMLDocument(xmlDoc,path);
+				//Change the preset selected
+				var pref = Components.classes["@mozilla.org/preferences-service;1"]
+				  .getService(Components.interfaces.nsIPrefBranch2);
+				pref.setCharPref("extensions.eqpresets.currentpreset",preset_name);
+				//reload list
+				eqpresets.loadList();
 			}else{
-				//Créer un nouveau préset
+				//create a new preset
 				var presetDOM = xmlDoc.createElement("preset");
 				presetDOM.setAttribute("name",preset_name);
 				
@@ -362,13 +369,13 @@ var data = "Winamp EQ library file v1.1!--Entry1";
 				alert(strbundle.getString("alertPresetModified"));
 				//alert("Preset modified");
 				
-				//Sauver fichier
-				cometeeq.saveXMLDocument(xmlDoc,path);
-				//On change le preset sélectionné
+				//save fichier
+				eqpresets.saveXMLDocument(xmlDoc,path);
+				//Change the preset selected
 				var pref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2);
-				pref.setCharPref("extensions.cometeeq.currentpreset",preset_name);
-				//Recharger liste
-				cometeeq.loadList();
+				pref.setCharPref("extensions.eqpresets.currentpreset",preset_name);
+				//reload list
+				eqpresets.loadList();
 			}
 		}else{
 			alert(strbundle.getString("alertPresetNameMissing"));
@@ -377,28 +384,28 @@ var data = "Winamp EQ library file v1.1!--Entry1";
 		}
 	},
 	deletePreset: function(){
-		//récupérer le string bundle
+		//retrieve the string bundle
 		var strbundle = document.getElementById("messages");
 		
-		var preset = document.getElementById("nom_preset").value;
+		var preset = document.getElementById("preset_name").value;
 		
-		// Lecture du fichier de présets
-		var path = cometeeq.getFilePathInProfile("cometeeq_presets.xml");
-		var xmlDoc = cometeeq.readXMLDocument(path);
+		// Reading the presets file
+		var path = eqpresets.getFilePathInProfile("equalizer_presets.xml");
+		var xmlDoc = eqpresets.readXMLDocument(path);
 		
 		var rootNode = xmlDoc.documentElement;
 		var node = null;
 		var presets = rootNode.getElementsByTagName("preset");
-		//On parcours les presets du fichier de paramétrage
+		//Parsing presets from the settings file
 		for (var i = 0, sz = presets.length; i < sz; i++)
 			if(presets[i].getAttribute("name") == preset)
 					node = presets[i];
 					
 		if(node != null){
 			rootNode.removeChild(node);
-			cometeeq.saveXMLDocument(xmlDoc,path);
-			cometeeq.loadList();
-			document.getElementById("nom_preset").value="";
+			eqpresets.saveXMLDocument(xmlDoc,path);
+			eqpresets.loadList();
+			document.getElementById("preset_name").value="";
 			alert(strbundle.getString("alertPresetBegin")+" "+preset+" "+strbundle.getString("alertPresetDeletedEnd"));
 			//alert("Preset Deleted");
 		}else{
@@ -408,30 +415,29 @@ var data = "Winamp EQ library file v1.1!--Entry1";
 	},
 	restorePreset: function(){
 		if(confirm("Restore presets?")){
-			var path = cometeeq.getFilePathInProfile("cometeeq_presets.xml");
+			var path = eqpresets.getFilePathInProfile("equalizer_presets.xml");
 			
+			//Write settings file
+			var presets = eqpresets.getDefaultPresets();
 				
-			//Ecriture du fichier de paramètres
-			var presets = cometeeq.getDefaultPresets();
-				
-			// creation d'un parser DOM,
+			// creation of DOM parser
 			var parser = Components.classes["@mozilla.org/xmlextras/domparser;1"]
 						.createInstance(Components.interfaces.nsIDOMParser);
 				
-			// création du contenu du fichier
-			var datas = cometeeq.createXMLString(presets);
+			// création of file content
+			var datas = eqpresets.createXMLString(presets);
 			
-			//On crée le document DOM
+			//create DOM document
 			var DOMDoc = parser.parseFromString(datas,"text/xml");
 				
-			//On l'enregistre dans ProfD
-			cometeeq.saveXMLDocument(DOMDoc,path);
+			//Save it in ProfD
+			eqpresets.saveXMLDocument(DOMDoc,path);
 			
-			//On recharge la liste
-			cometeeq.loadList();
+			//reload list
+			eqpresets.loadList();
 		
 		}
 	},
 };
 
-window.addEventListener("load", function(e) { cometeeq.onLoad(e); }, false);
+window.addEventListener("load", function(e) { eqpresets.onLoad(e); }, false);
