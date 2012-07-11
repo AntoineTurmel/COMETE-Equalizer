@@ -442,6 +442,9 @@ eqpresets = {
 		}
 	},
 	restorePreset: function(){
+		//retrieve the string bundle
+		var strbundle = document.getElementById("messages");
+        
 		if(confirm(strbundle.getString("alertPresetRestore"))){
 			var path = eqpresets.getFilePathInProfile("equalizer_presets.xml");
 			
