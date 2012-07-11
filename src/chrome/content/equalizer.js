@@ -3,6 +3,34 @@ if (typeof eqpresets == 'undefined') {
   var eqpresets = {};
 }
 
+var strings = {
+        values: [],
+        loadDtdInJs: function(file){
+                var pattern = /<!ENTITY\s(.*?)[\s]+\"(.*?)\">/g;
+                var URL = file;
+                var req = new XMLHttpRequest();
+                req.overrideMimeType('text/plain');
+                req.open('GET', URL, false); 
+                req.send(null);
+                if(req.status == 0){
+                        var result;
+                        while(result = pattern.exec(req.responseText)){
+                                strings.values[result[1]] = result[2];
+                        }
+                }
+        },
+        
+        getFormattedString: function(name, params){
+                var str = strings.values[name];
+                for(var i=0; i<params.length; i++){
+                        str = str.replace("BB"+i+"BB", params[i]);
+                }
+                return str;
+        }
+}
+
+strings.loadDtdInJs("chrome://songbird/locale/songbird.dtd");
+
 eqpresets = {
 	onLoad: function() {
 		var equalizer = document.getElementById("equalizer");
@@ -48,8 +76,8 @@ eqpresets = {
 			var opt = document.createElement('menuitem');
 			//Creation of the oncommand with parameters of the preset bands
 			var node = presets[i];
-			var value = "eqpresets.presets('"+presets[i].getAttribute("name")+
-			  "'";
+			var value = 'eqpresets.presets("'+presets[i].getAttribute("name")+
+			  '"';
 			var bands = node.getElementsByTagName("band");
 			for(var j = 0; j< bands.length; j++){
 				var element = bands[j]; 
@@ -164,24 +192,24 @@ eqpresets = {
 	},
 	getDefaultPresets: function(){
 		var presets = new Array();
-		presets["classical"] = ["0","0","0","0","0","0","-0.2","-0.2","-0.2","-0.4"];
-		presets["club"] = ["0","0","0.15","0.2","0.2","0.2","0.15","0","0","0"];
-		presets["dance"] = ["0.5","0.25","0.05","0","0","-0.2","-0.3","-0.3","0","0"];
+		presets[strings.values['equalizer.preset.classical']] = ["0","0","0","0","0","0","-0.2","-0.2","-0.2","-0.4"];
+		presets[strings.values['equalizer.preset.club']] = ["0","0","0.15","0.2","0.2","0.2","0.15","0","0","0"];
+		presets[strings.values['equalizer.preset.dance']] = ["0.5","0.25","0.05","0","0","-0.2","-0.3","-0.3","0","0"];
 		presets["flat"] = ["0","0","0","0","0","0","0","0","0","0"];
-		presets["fullbass"] = ["0.4","0.4","0.4","0.2","0","-0.2","-0.3","-0.35","-0.4","-0.4"];
-		presets["fullbasstreble"] = ["0.2","0.15","0","-0.3","-0.25","0","0.2","0.3","0.4","0.4"];
-		presets["fulltreble"] = ["-0.4","-0.4","-0.4","-0.15","0.1","0.4","0.8","0.8","0.8","0.8"];
-		presets["headphones"] = ["0.2","0.4","0.2","-0.2","-0.15","0","0.2","0.4","0.6","0.7"];
-		presets["largehall"] = ["0.45","0.45","0.2","0.2","0","-0.2","-0.2","-0.2","0","0"];
-		presets["live"] = ["-0.2","0","0.15","0.2","0.2","0.2","0.1","0.05","0.05","0"];
-		presets["party"] = ["0.25","0.25","0","0","0","0","0","0","0.25","0.25"];
-		presets["pop"] = ["-0.15","0.15","0.2","0.25","0.15","-0.15","-0.15","-0.15","-0.1","-0.1"];
-		presets["reggae"] = ["0","0","-0.1","-0.2","0","0.2","0.2","0","0","0"];
-		presets["rock"] = ["0.3","0.15","-0.2","-0.3","-0.1","0.15","0.3","0.35","0.35","0.35"];
-		presets["ska"] = ["-0.1","-0.15","-0.12","-0.05","0.15","0.2","0.3","0.3","0.4","0.3"];
-		presets["soft"] = ["0.2","0","-0.1","-0.15","-0.1","0.2","0.3","0.35","0.4","0.5"];
-		presets["softrock"] = ["0.2","0.2","0","-0.1","-0.2","-0.3","-0.2","-0.1","0.2","0.4"];
-		presets["techno"] = ["0.3","0.25","0","-0.25","-0.2","0","0.3","0.35","0.35","0.3"];
+		presets[strings.values['equalizer.preset.full_bass']] = ["0.4","0.4","0.4","0.2","0","-0.2","-0.3","-0.35","-0.4","-0.4"];
+		presets[strings.values['equalizer.preset.full_bass_treble']] = ["0.2","0.15","0","-0.3","-0.25","0","0.2","0.3","0.4","0.4"];
+		presets[strings.values['equalizer.preset.full_treble']] = ["-0.4","-0.4","-0.4","-0.15","0.1","0.4","0.8","0.8","0.8","0.8"];
+		presets[strings.values['equalizer.preset.small_speakers']] = ["0.2","0.4","0.2","-0.2","-0.15","0","0.2","0.4","0.6","0.7"];
+		presets[strings.values['equalizer.preset.large_hall']] = ["0.45","0.45","0.2","0.2","0","-0.2","-0.2","-0.2","0","0"];
+		presets[strings.values['equalizer.preset.live']] = ["-0.2","0","0.15","0.2","0.2","0.2","0.1","0.05","0.05","0"];
+		presets[strings.values['equalizer.preset.party']] = ["0.25","0.25","0","0","0","0","0","0","0.25","0.25"];
+		presets[strings.values['equalizer.preset.pop']] = ["-0.15","0.15","0.2","0.25","0.15","-0.15","-0.15","-0.15","-0.1","-0.1"];
+		presets[strings.values['equalizer.preset.reggae']] = ["0","0","-0.1","-0.2","0","0.2","0.2","0","0","0"];
+		presets[strings.values['equalizer.preset.rock']] = ["0.3","0.15","-0.2","-0.3","-0.1","0.15","0.3","0.35","0.35","0.35"];
+		presets[strings.values['equalizer.preset.ska']] = ["-0.1","-0.15","-0.12","-0.05","0.15","0.2","0.3","0.3","0.4","0.3"];
+		presets[strings.values['equalizer.preset.soft']] = ["0.2","0","-0.1","-0.15","-0.1","0.2","0.3","0.35","0.4","0.5"];
+		presets[strings.values['equalizer.preset.soft_rock']] = ["0.2","0.2","0","-0.1","-0.2","-0.3","-0.2","-0.1","0.2","0.4"];
+		presets[strings.values['equalizer.preset.techno']] = ["0.3","0.25","0","-0.25","-0.2","0","0.3","0.35","0.35","0.3"];
 		
 		return presets;
 	},
