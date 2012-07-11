@@ -64,7 +64,7 @@ eqpresets = {
 		//We retrieve the current preset in preferences
 		var pref = Components.classes["@mozilla.org/preferences-service;1"]
                      .getService(Components.interfaces.nsIPrefBranch2);
-		var preset = pref.getCharPref("extensions.eqpresets.currentpreset");	
+		var preset = pref.getCharPref("songbird.eq.currentpreset");	
 
 		var presets = rootNode.getElementsByTagName("preset");
 		var selectedItem = null;
@@ -136,7 +136,7 @@ eqpresets = {
 			
 			//flat preset choosen by default
 			var pref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2);
-			pref.setCharPref("extensions.eqpresets.currentpreset","flat");
+			pref.setCharPref("songbird.eq.currentpreset","flat");
 		}
 		
 	},
@@ -241,7 +241,7 @@ eqpresets = {
   	var pref = Components.classes["@mozilla.org/preferences-service;1"]
   	                .getService(Components.interfaces.nsIPrefBranch2);
 
-	pref.setCharPref("extensions.eqpresets.currentpreset",eqpreset);
+	pref.setCharPref("songbird.eq.currentpreset",eqpreset);
 	
 	var start = new Array();
 	var bands = new Array();
@@ -378,7 +378,7 @@ eqpresets = {
 				//Change the preset selected
 				var pref = Components.classes["@mozilla.org/preferences-service;1"]
 				  .getService(Components.interfaces.nsIPrefBranch2);
-				pref.setCharPref("extensions.eqpresets.currentpreset",preset_name);
+				pref.setCharPref("songbird.eq.currentpreset",preset_name);
 				//reload list
 				eqpresets.loadList();
 			}else{
@@ -401,7 +401,7 @@ eqpresets = {
 				eqpresets.saveXMLDocument(xmlDoc,path);
 				//Change the preset selected
 				var pref = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch2);
-				pref.setCharPref("extensions.eqpresets.currentpreset",preset_name);
+				pref.setCharPref("songbird.eq.currentpreset",preset_name);
 				//reload list
 				eqpresets.loadList();
 			}
@@ -442,7 +442,7 @@ eqpresets = {
 		}
 	},
 	restorePreset: function(){
-		if(confirm("Restore presets?")){
+		if(confirm(strbundle.getString("alertPresetRestore"))){
 			var path = eqpresets.getFilePathInProfile("equalizer_presets.xml");
 			
 			//Write settings file

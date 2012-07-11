@@ -1,4 +1,5 @@
-<!ENTITY Save "Save">
-<!ENTITY Delete "Delete">
-<!ENTITY Restore "Restore">
-<!ENTITY Presets "Presets">
+<!ENTITY equalizer.presets.save "Save">
+<!ENTITY equalizer.presets.delete "Delete">
+<!ENTITY equalizer.presets.restore "Restore">
+<!ENTITY equalizer.presets.name "Name:">
+<!ENTITY equalizer.presets "Presets">

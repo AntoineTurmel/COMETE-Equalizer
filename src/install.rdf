@@ -5,12 +5,13 @@
     <em:id>EqPresets@getnightingale.com</em:id>
     <em:type>2</em:type>
     <em:name>Equalizer Presets +</em:name>
-    <em:version>1.0</em:version>
-    <em:creator>GeekShadow</em:creator>
-    <em:contributor>Azraeht</em:contributor>
+    <em:version>1.1</em:version>
+    <em:creator>GeekShadow (Antoine Turmel)</em:creator>
+    <em:contributor>Azraeht (Brice Santus)</em:contributor>
     <em:contributor>Seba_Kerckhof</em:contributor>
     <em:description>Add Presets to the Equalizer with ability to save</em:description>
     <em:iconURL>chrome://eqpresets/skin/icon_addon.png</em:iconURL>
+    <em:homepageURL>https://github.com/GeekShadow/COMETE-Equalizer</em:homepageURL>
 
     <!-- Songbird -->
     <em:targetApplication>

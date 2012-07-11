@@ -19,13 +19,13 @@
     
 	<vbox>
 	  <hbox>
-		  <label value="Nom :"/>
+		  <label value="&equalizer.presets.name;"/>
 		  <textbox id="preset_name" width="150px"/>
 	  </hbox>
 	  <hbox>
-		  <button id="save" label="&Save;" oncommand="eqpresets.savePreset()" flex="1"/>
-		  <button id="delete" label="&Delete;" oncommand="eqpresets.deletePreset()" flex="1"/>
-		  <button id="restore" label="&Restore;" oncommand="eqpresets.restorePreset()" flex="1"/>
+		  <button id="save" label="&equalizer.presets.save;" oncommand="eqpresets.savePreset()" flex="1"/>
+		  <button id="delete" label="&equalizer.presets.delete;" oncommand="eqpresets.deletePreset()" flex="1"/>
+		  <button id="restore" label="&equalizer.presets.restore;" oncommand="eqpresets.restorePreset()" flex="1"/>
 	  </hbox>
 	</vbox>
 
