@@ -1,7 +1,7 @@
 content eqpresets  chrome/content/
 
 locale  eqpresets  en-US  chrome/locale/en-US/
-locale  eqpresets  fr-FR  chrome/locale/fr-FR/
+locale  eqpresets  fr  chrome/locale/fr/
 
 skin    eqpresets  classic/1.0 chrome/skin/
 
