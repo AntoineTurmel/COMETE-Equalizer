@@ -6,7 +6,7 @@ if (typeof eqpresets == 'undefined') {
 var strings = {
         values: [],
         loadDtdInJs: function(file){
-                var pattern = /<!ENTITY\s(.*?)[\s]+\"(.*?)\">/g;
+                var pattern = /<!ENTITY\s(.*?)[\s]+\"(.*?)\"[\s]*>/g;
                 var URL = file;
                 var req = new XMLHttpRequest();
                 req.overrideMimeType('text/plain');
