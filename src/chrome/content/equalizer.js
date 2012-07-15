@@ -34,7 +34,7 @@ strings.loadDtdInJs("chrome://songbird/locale/songbird.dtd");
 eqpresets = {
 	onLoad: function() {
 		var equalizer = document.getElementById("equalizer");
-		equalizer.setAttribute("height","250");
+		equalizer.setAttribute("height","270");
 		//equalizer.setAttribute("width","250");
 		//Check if the XML file exists
 		eqpresets.findOrCreate();
